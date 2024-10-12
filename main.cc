@@ -200,9 +200,9 @@ const token& lexer::next(void)
                         return _curr = token{TOK_WORD, s};
                 }
 
-                if (_inval && (isalpha(c) || c == '-')) {
+                if (_inval && (isalpha(c) || c == '-' || c == '*')) {
                         std::string s {};
-                        while (isalpha(c) || c == '-') {
+                        while (isalpha(c) || c == '-' || c == '*') {
                                 s += c;
                                 c = fgetc(_fp);
                         }
