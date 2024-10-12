@@ -35,6 +35,7 @@ enum {
         TOK_COMMA,
         TOK_SEMI,
         TOK_ACCEPT,
+        TOK_ACCEPT_CHARSET,
         TOK_COUNT,
 };
 
@@ -69,6 +70,7 @@ token::token(int type, const std::string& lex)
         case TOK_COMMA:
         case TOK_SEMI:
         case TOK_ACCEPT:
+        case TOK_ACCEPT_CHARSET:
                 break;
         default:
                 usage("bad token type: %d", _type);
@@ -103,6 +105,7 @@ const std::string& token::name(void) const
                 "TOK_COMMA",
                 "TOK_SEMI",
                 "TOK_ACCEPT",
+                "TOK_ACCEPT_CHARSET",
         };
 
         return names.at(_type);
@@ -183,6 +186,8 @@ const token& lexer::next(void)
                                 return _curr = token{TOK_CONTENT_LENGTH, s};
                         if (s == "Accept")
                                 return _curr = token{TOK_ACCEPT, s};
+                        if (s == "Accept-Charset")
+                                return _curr = token{TOK_ACCEPT_CHARSET, s};
                         usage("bad header: %s", s.c_str());
                 }
 
@@ -202,7 +207,8 @@ const token& lexer::next(void)
 
                 if (_inval && (isalpha(c) || c == '-' || c == '*')) {
                         std::string s {};
-                        while (isalpha(c) || c == '-' || c == '*') {
+                        while (isalpha(c) || isdigit(c) ||
+                                        c == '-' || c == '*') {
                                 s += c;
                                 c = fgetc(_fp);
                         }
@@ -268,12 +274,18 @@ struct media {
         float arg;
 };
 
+struct charset {
+        std::string type;
+        float arg;
+};
+
 struct request {
         std::string method;
         std::string path;
         float version;
         int len;
         std::vector<media> accept;
+        std::vector<charset> charsets;
 };
 
 int main(void)
@@ -324,6 +336,22 @@ int main(void)
                                         lex.skip(TOK_COMMA);
                                 req.accept.push_back(m);
                         }
+                } else if (type == TOK_ACCEPT_CHARSET) {
+                        while (lex.type() != TOK_EOL) {
+                                charset set;
+                                set.type = std::string{lex.lex()};
+                                lex.skip(TOK_WORD);
+                                if (lex.type() == TOK_SEMI) {
+                                        lex.skip(TOK_SEMI);
+                                        lex.skip(TOK_WORD);
+                                        lex.skip(TOK_EQ);
+                                        set.arg = atof(lex.lex().c_str());
+                                        lex.skip(TOK_NUM);
+                                }
+                                if (lex.type() == TOK_COMMA)
+                                        lex.skip(TOK_COMMA);
+                                req.charsets.push_back(set);
+                        }
                 }
 
                 lex.skip(TOK_EOL);
@@ -339,4 +367,8 @@ int main(void)
                 printf("\t%s, %s, %f\n", m.type.c_str(),
                                 m.subtype.c_str(), m.arg);
         }
+
+        printf("Accept-Charset:\n");
+        for (auto s : req.charsets)
+                printf("\t%s, %f\n", s.type.c_str(), s.arg);
 }
