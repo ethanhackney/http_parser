@@ -4,4 +4,5 @@ printf "GET /path/to/file HTTP/1.1\r\n" >req
 printf "Content-Length: 395\r\n" >>req
 printf "Accept: text/plain; q=0.5, text/html, text/x-dvi; q=0.8\r\n" >>req
 printf "Accept-Charset: iso-8859-5, unicode-1-1;q=0.8\r\n" >> req
+printf "Accept-Encoding: compress;q=0.5, gzip;q=1.0\r\n" >> req
 printf "\r\n" >>req
