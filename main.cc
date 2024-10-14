@@ -17,6 +17,11 @@ struct encoding {
         float arg;
 };
 
+struct language {
+        std::string type;
+        float arg;
+};
+
 struct request {
         std::string method;
         std::string path;
@@ -25,6 +30,7 @@ struct request {
         std::vector<media> accept;
         std::vector<charset> charsets;
         std::vector<encoding> encodings;
+        std::vector<language> langs;
 };
 
 int main(void)
@@ -107,6 +113,22 @@ int main(void)
                                         lex.skip(TOK_COMMA);
                                 req.encodings.push_back(e);
                         }
+                } else if (type == TOK_ACCEPT_LANGUAGE) {
+                        while (lex.type() != TOK_EOL) {
+                                language l {"", 0};
+                                l.type = std::string{lex.lex()};
+                                lex.skip(TOK_WORD);
+                                if (lex.type() == TOK_SEMI) {
+                                        lex.skip(TOK_SEMI);
+                                        lex.skip(TOK_WORD);
+                                        lex.skip(TOK_EQ);
+                                        l.arg = atof(lex.lex().c_str());
+                                        lex.skip(TOK_NUM);
+                                }
+                                if (lex.type() == TOK_COMMA)
+                                        lex.skip(TOK_COMMA);
+                                req.langs.push_back(l);
+                        }
                 }
 
                 lex.skip(TOK_EOL);
@@ -130,4 +152,8 @@ int main(void)
         printf("Accept-Encoding:\n");
         for (auto e : req.encodings)
                 printf("\t%s, %f\n", e.type.c_str(), e.arg);
+
+        printf("Accept-Language:\n");
+        for (auto l : req.langs)
+                printf("\t%s, %f\n", l.type.c_str(), l.arg);
 }

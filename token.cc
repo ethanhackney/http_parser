@@ -22,6 +22,7 @@ token::token(int type, const std::string& lex)
         case TOK_ACCEPT:
         case TOK_ACCEPT_CHARSET:
         case TOK_ACCEPT_ENCODING:
+        case TOK_ACCEPT_LANGUAGE:
                 break;
         default:
                 usage("bad token type: %d", _type);
@@ -58,6 +59,7 @@ const std::string& token::name(void) const
                 "TOK_ACCEPT",
                 "TOK_ACCEPT_CHARSET",
                 "TOK_ACCEPT_ENCODING",
+                "TOK_ACCEPT_LANGUAGE",
         };
 
         return names.at(_type);

@@ -61,6 +61,8 @@ const token& lexer::next(void)
                                 return _curr = token{TOK_ACCEPT_CHARSET, s};
                         if (s == "Accept-Encoding")
                                 return _curr = token{TOK_ACCEPT_ENCODING, s};
+                        if (s == "Accept-Language")
+                                return _curr = token{TOK_ACCEPT_LANGUAGE, s};
                         usage("bad header: %s", s.c_str());
                 }
 
