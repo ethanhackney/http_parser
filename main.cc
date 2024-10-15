@@ -31,6 +31,7 @@ struct request {
         std::vector<charset> charsets;
         std::vector<encoding> encodings;
         std::vector<language> langs;
+        std::string auth;
 };
 
 int main(void)
@@ -129,6 +130,9 @@ int main(void)
                                         lex.skip(TOK_COMMA);
                                 req.langs.push_back(l);
                         }
+                } else if (type == TOK_AUTHORIZATION) {
+                        req.auth = std::string{lex.lex()};
+                        lex.skip(TOK_WORD);
                 }
 
                 lex.skip(TOK_EOL);
@@ -156,4 +160,6 @@ int main(void)
         printf("Accept-Language:\n");
         for (auto l : req.langs)
                 printf("\t%s, %f\n", l.type.c_str(), l.arg);
+
+        printf("Authorization:\n\t%s\n", req.auth.c_str());
 }

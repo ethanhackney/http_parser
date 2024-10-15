@@ -1,5 +1,14 @@
 #include "lexer.h"
 
+static std::unordered_map<std::string,int> reqmap {
+        {"Content-Length", TOK_CONTENT_LENGTH},
+        {"Accept", TOK_ACCEPT},
+        {"Accept-Charset", TOK_ACCEPT_CHARSET},
+        {"Accept-Encoding", TOK_ACCEPT_ENCODING},
+        {"Accept-Language", TOK_ACCEPT_LANGUAGE},
+        {"Authorization", TOK_AUTHORIZATION},
+};
+
 lexer::lexer(FILE *fp)
         : _fp {fp}
 {
@@ -53,6 +62,7 @@ const token& lexer::next(void)
                                 c = fgetc(_fp);
                         }
                         _putback = c;
+                        /*
                         if (s == "Content-Length")
                                 return _curr = token{TOK_CONTENT_LENGTH, s};
                         if (s == "Accept")
@@ -63,7 +73,14 @@ const token& lexer::next(void)
                                 return _curr = token{TOK_ACCEPT_ENCODING, s};
                         if (s == "Accept-Language")
                                 return _curr = token{TOK_ACCEPT_LANGUAGE, s};
-                        usage("bad header: %s", s.c_str());
+                        if (s == "Authorization")
+                                return _curr = token{TOK_AUTHORIZATION, s};
+                        */
+                        auto p = reqmap.find(s);
+                        if (p == reqmap.end())
+                                usage("bad header: %s", s.c_str());
+
+                        return _curr = token{p->second};
                 }
 
                 if (_first && isalpha(c)) {

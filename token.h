@@ -24,6 +24,7 @@ enum {
         TOK_ACCEPT_CHARSET,
         TOK_ACCEPT_ENCODING,
         TOK_ACCEPT_LANGUAGE,
+        TOK_AUTHORIZATION,
         TOK_COUNT,
 };
 
