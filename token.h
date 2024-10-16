@@ -25,6 +25,8 @@ enum {
         TOK_ACCEPT_ENCODING,
         TOK_ACCEPT_LANGUAGE,
         TOK_AUTHORIZATION,
+        TOK_CACHE_CONTROL,
+        TOK_STR,
         TOK_COUNT,
 };
 

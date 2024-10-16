@@ -7,6 +7,7 @@ static std::unordered_map<std::string,int> reqmap {
         {"Accept-Encoding", TOK_ACCEPT_ENCODING},
         {"Accept-Language", TOK_ACCEPT_LANGUAGE},
         {"Authorization", TOK_AUTHORIZATION},
+        {"Cache-Control", TOK_CACHE_CONTROL},
 };
 
 lexer::lexer(FILE *fp)
@@ -29,6 +30,7 @@ const token& lexer::next(void)
                 if ((_inval || _first) && c == ' ')
                         continue;
 
+                std::string s;
                 switch (c) {
                 case EOF:
                         return _curr = token{};
@@ -53,6 +55,14 @@ const token& lexer::next(void)
                         return _curr = token{TOK_COMMA};
                 case ';':
                         return _curr = token{TOK_SEMI};
+                case '"':
+                        s = "";
+                        while ((c = fgetc(_fp)) != EOF && c != '"') {
+                                s += c;
+                        }
+                        if (c == EOF)
+                                usage("malformed string literal");
+                        return _curr = token{TOK_STR, s};
                 }
 
                 if (_inhdr && (isalpha(c) || c == '-')) {
@@ -62,20 +72,6 @@ const token& lexer::next(void)
                                 c = fgetc(_fp);
                         }
                         _putback = c;
-                        /*
-                        if (s == "Content-Length")
-                                return _curr = token{TOK_CONTENT_LENGTH, s};
-                        if (s == "Accept")
-                                return _curr = token{TOK_ACCEPT, s};
-                        if (s == "Accept-Charset")
-                                return _curr = token{TOK_ACCEPT_CHARSET, s};
-                        if (s == "Accept-Encoding")
-                                return _curr = token{TOK_ACCEPT_ENCODING, s};
-                        if (s == "Accept-Language")
-                                return _curr = token{TOK_ACCEPT_LANGUAGE, s};
-                        if (s == "Authorization")
-                                return _curr = token{TOK_AUTHORIZATION, s};
-                        */
                         auto p = reqmap.find(s);
                         if (p == reqmap.end())
                                 usage("bad header: %s", s.c_str());

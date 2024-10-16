@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include <vector>
+#include <unordered_set>
 
 struct media {
         std::string type;
@@ -22,6 +23,17 @@ struct language {
         float arg;
 };
 
+struct cache_dir {
+        std::string type;
+        std::string s_arg;
+        float n_arg {0};
+};
+
+struct cache_ctl {
+        cache_dir reqdir;
+        cache_dir resdir;
+};
+
 struct request {
         std::string method;
         std::string path;
@@ -32,6 +44,7 @@ struct request {
         std::vector<encoding> encodings;
         std::vector<language> langs;
         std::string auth;
+        cache_ctl cache;
 };
 
 int main(void)
@@ -133,6 +146,45 @@ int main(void)
                 } else if (type == TOK_AUTHORIZATION) {
                         req.auth = std::string{lex.lex()};
                         lex.skip(TOK_WORD);
+                } else if (type == TOK_CACHE_CONTROL) {
+                        cache_dir reqdir;
+                        reqdir.n_arg = 0;
+                        reqdir.s_arg = "";
+                        reqdir.type = std::string{lex.lex()};
+                        lex.skip(TOK_WORD);
+                        if (lex.type() == TOK_EQ) {
+                                lex.skip(TOK_EQ);
+                                if (lex.type() == TOK_NUM) {
+                                        reqdir.n_arg = atof(lex.lex().c_str());
+                                } else {
+                                        reqdir.s_arg = std::string{lex.lex()};
+                                }
+                                lex.skip(lex.type());
+                        }
+
+                        cache_dir resdir;
+                        resdir.type = "";
+                        resdir.n_arg = 0;
+                        resdir.s_arg = "";
+                        if (lex.type() == TOK_COMMA) {
+                                lex.skip(TOK_COMMA);
+                                resdir.type = std::string{lex.lex()};
+                                lex.skip(TOK_WORD);
+                                if (lex.type() == TOK_EQ) {
+                                        lex.skip(TOK_EQ);
+                                        if (lex.type() == TOK_NUM) {
+                                                resdir.n_arg = atof(
+                                                        lex.lex().c_str());
+                                        } else {
+                                                resdir.s_arg = std::string{
+                                                        lex.lex()};
+                                        }
+                                        lex.skip(lex.type());
+                                }
+                        }
+
+                        req.cache.resdir = resdir;
+                        req.cache.reqdir = reqdir;
                 }
 
                 lex.skip(TOK_EOL);
@@ -162,4 +214,60 @@ int main(void)
                 printf("\t%s, %f\n", l.type.c_str(), l.arg);
 
         printf("Authorization:\n\t%s\n", req.auth.c_str());
+
+        printf("Cache-Control:\n");
+        auto type = req.cache.reqdir.type;
+        printf("\t%s", type.c_str());
+        std::unordered_set<std::string> reqdirmap {
+                "no-cache",
+                "no-store",
+                "max-age",
+                "max-stale",
+                "min-fresh",
+                "no-transform",
+                "only-if-cached",
+        };
+        auto p = reqdirmap.find(type);
+        if (p != reqdirmap.end()) {
+                if (type == "max-age" || type == "min-fresh")
+                        printf(", %f", req.cache.reqdir.n_arg);
+                if (type == "max-stale" && req.cache.reqdir.n_arg != 0)
+                        printf(", %f", req.cache.reqdir.n_arg);
+        } else {
+                if (req.cache.reqdir.s_arg.size() != 0)
+                        printf(", %s", req.cache.reqdir.s_arg.c_str());
+                if (req.cache.reqdir.n_arg != 0)
+                        printf(", %f", req.cache.reqdir.n_arg);
+        }
+        printf("\n");
+
+        type = req.cache.resdir.type;
+        printf("\t%s", type.c_str());
+        std::unordered_set<std::string> resdirmap {
+                "public",
+                "private",
+                "no-cache",
+                "no-store",
+                "no-transform",
+                "must-revalidate",
+                "proxy-revalidate",
+                "max-age",
+                "s-maxage",
+
+        };
+        p = resdirmap.find(type);
+        if (p != resdirmap.end()) {
+                if (type == "max-age" || type == "s-maxage")
+                        printf(", %f", req.cache.resdir.n_arg);
+                if ((type == "private" || type == "no-cache") &&
+                        req.cache.resdir.s_arg.size() != 0) {
+                        printf(", %s", req.cache.resdir.s_arg.c_str());
+                }
+        } else {
+                if (req.cache.resdir.s_arg.size() != 0)
+                        printf(", %s", req.cache.resdir.s_arg.c_str());
+                if (req.cache.resdir.n_arg != 0)
+                        printf(", %f", req.cache.resdir.n_arg);
+        }
+        printf("\n");
 }
