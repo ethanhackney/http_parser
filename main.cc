@@ -44,6 +44,7 @@ struct request {
         std::vector<encoding> encodings;
         std::vector<language> langs;
         std::string auth;
+        std::string connect;
         cache_ctl cache;
 };
 
@@ -185,6 +186,9 @@ int main(void)
 
                         req.cache.resdir = resdir;
                         req.cache.reqdir = reqdir;
+                } else if (type == TOK_CONNECTION) {
+                        req.connect = std::string{lex.lex()};
+                        lex.skip(TOK_WORD);
                 }
 
                 lex.skip(TOK_EOL);
@@ -270,4 +274,7 @@ int main(void)
                         printf(", %f", req.cache.resdir.n_arg);
         }
         printf("\n");
+
+        printf("Connection:\n");
+        printf("\t%s\n", req.connect.c_str());
 }

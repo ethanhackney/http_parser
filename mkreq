@@ -8,4 +8,5 @@ printf "Accept-Encoding: compress;q=0.5, gzip;q=1.0\r\n" >> req
 printf "Accept-Language: da, en-gb;q=0.8, en;q=0.7\r\n" >> req
 printf "Authorization: credentials\r\n" >>req
 printf "Cache-Control: no-cache, private=\"field\"\r\n" >>req
+printf "Connection: close\r\n" >>req
 printf "\r\n" >>req

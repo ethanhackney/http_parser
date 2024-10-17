@@ -26,6 +26,7 @@ token::token(int type, const std::string& lex)
         case TOK_AUTHORIZATION:
         case TOK_CACHE_CONTROL:
         case TOK_STR:
+        case TOK_CONNECTION:
                 break;
         default:
                 usage("bad token type: %d", _type);
@@ -66,6 +67,7 @@ const std::string& token::name(void) const
                 "TOK_AUTHORIZATION",
                 "TOK_CACHE_CONTROL",
                 "TOK_STR",
+                "TOK_CONNECTION",
         };
 
         return names.at(_type);

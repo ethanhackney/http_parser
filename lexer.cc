@@ -8,6 +8,7 @@ static std::unordered_map<std::string,int> reqmap {
         {"Accept-Language", TOK_ACCEPT_LANGUAGE},
         {"Authorization", TOK_AUTHORIZATION},
         {"Cache-Control", TOK_CACHE_CONTROL},
+        {"Connection", TOK_CONNECTION},
 };
 
 lexer::lexer(FILE *fp)

@@ -6,4 +6,5 @@ Accept-Encoding: compress;q=0.5, gzip;q=1.0
 Accept-Language: da, en-gb;q=0.8, en;q=0.7
 Authorization: credentials
 Cache-Control: no-cache, private="field"
+Connection: close
 

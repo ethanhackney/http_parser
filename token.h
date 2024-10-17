@@ -27,6 +27,7 @@ enum {
         TOK_AUTHORIZATION,
         TOK_CACHE_CONTROL,
         TOK_STR,
+        TOK_CONNECTION,
         TOK_COUNT,
 };
 
