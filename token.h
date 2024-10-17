@@ -28,6 +28,7 @@ enum {
         TOK_CACHE_CONTROL,
         TOK_STR,
         TOK_CONNECTION,
+        TOK_CONTENT_ENCODING,
         TOK_COUNT,
 };
 

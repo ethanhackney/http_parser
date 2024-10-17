@@ -45,6 +45,7 @@ struct request {
         std::vector<language> langs;
         std::string auth;
         std::string connect;
+        std::string ctnt_encoding;
         cache_ctl cache;
 };
 
@@ -189,6 +190,9 @@ int main(void)
                 } else if (type == TOK_CONNECTION) {
                         req.connect = std::string{lex.lex()};
                         lex.skip(TOK_WORD);
+                } else if (type == TOK_CONTENT_ENCODING) {
+                        req.ctnt_encoding = std::string{lex.lex()};
+                        lex.skip(TOK_WORD);
                 }
 
                 lex.skip(TOK_EOL);
@@ -277,4 +281,7 @@ int main(void)
 
         printf("Connection:\n");
         printf("\t%s\n", req.connect.c_str());
+
+        printf("Content-Encoding:\n");
+        printf("\t%s\n", req.ctnt_encoding.c_str());
 }
