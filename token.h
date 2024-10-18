@@ -29,6 +29,7 @@ enum {
         TOK_STR,
         TOK_CONNECTION,
         TOK_CONTENT_ENCODING,
+        TOK_CONTENT_LANGUAGE,
         TOK_COUNT,
 };
 

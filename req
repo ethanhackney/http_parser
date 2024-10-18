@@ -8,4 +8,5 @@ Authorization: credentials
 Cache-Control: no-cache, private="field"
 Connection: close
 Content-Encoding: gzip
+Content-Language: mi, en
 

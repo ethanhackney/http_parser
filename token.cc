@@ -28,6 +28,7 @@ token::token(int type, const std::string& lex)
         case TOK_STR:
         case TOK_CONNECTION:
         case TOK_CONTENT_ENCODING:
+        case TOK_CONTENT_LANGUAGE:
                 break;
         default:
                 usage("bad token type: %d", _type);
@@ -70,6 +71,7 @@ const std::string& token::name(void) const
                 "TOK_STR",
                 "TOK_CONNECTION",
                 "TOK_CONTENT_ENCODING",
+                "TOK_CONTENT_LANGUAGE",
         };
 
         return names.at(_type);

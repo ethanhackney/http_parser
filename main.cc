@@ -47,6 +47,7 @@ struct request {
         std::string connect;
         std::string ctnt_encoding;
         cache_ctl cache;
+        std::vector<language> ctnt_langs;
 };
 
 int main(void)
@@ -193,6 +194,15 @@ int main(void)
                 } else if (type == TOK_CONTENT_ENCODING) {
                         req.ctnt_encoding = std::string{lex.lex()};
                         lex.skip(TOK_WORD);
+                } else if (type == TOK_CONTENT_LANGUAGE) {
+                        while (lex.type() != TOK_EOL) {
+                                language lang {"", 0};
+                                lang.type = std::string{lex.lex()};
+                                req.ctnt_langs.push_back(lang);
+                                lex.skip(TOK_WORD);
+                                if (lex.type() == TOK_COMMA)
+                                        lex.skip(TOK_COMMA);
+                        }
                 }
 
                 lex.skip(TOK_EOL);
@@ -284,4 +294,8 @@ int main(void)
 
         printf("Content-Encoding:\n");
         printf("\t%s\n", req.ctnt_encoding.c_str());
+
+        printf("Content-Language:\n");
+        for (auto l : req.ctnt_langs)
+                printf("\t%s\n", l.type.c_str());
 }

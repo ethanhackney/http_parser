@@ -10,6 +10,7 @@ static std::unordered_map<std::string,int> reqmap {
         {"Cache-Control", TOK_CACHE_CONTROL},
         {"Connection", TOK_CONNECTION},
         {"Content-Encoding", TOK_CONTENT_ENCODING},
+        {"Content-Language", TOK_CONTENT_LANGUAGE},
 };
 
 lexer::lexer(FILE *fp)

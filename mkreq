@@ -10,4 +10,5 @@ printf "Authorization: credentials\r\n" >>req
 printf "Cache-Control: no-cache, private=\"field\"\r\n" >>req
 printf "Connection: close\r\n" >>req
 printf "Content-Encoding: gzip\r\n" >>req
+printf "Content-Language: mi, en\r\n" >>req
 printf "\r\n" >>req
