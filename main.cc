@@ -48,6 +48,7 @@ struct request {
         std::string ctnt_encoding;
         cache_ctl cache;
         std::vector<language> ctnt_langs;
+        std::string md5;
 };
 
 int main(void)
@@ -203,6 +204,9 @@ int main(void)
                                 if (lex.type() == TOK_COMMA)
                                         lex.skip(TOK_COMMA);
                         }
+                } else if (type == TOK_CONTENT_MD5) {
+                        req.md5 = std::string{lex.lex()};
+                        lex.skip(TOK_WORD);
                 }
 
                 lex.skip(TOK_EOL);
@@ -298,4 +302,7 @@ int main(void)
         printf("Content-Language:\n");
         for (auto l : req.ctnt_langs)
                 printf("\t%s\n", l.type.c_str());
+
+        printf("Content-MD5:\n");
+        printf("\t%s\n", req.md5.c_str());
 }

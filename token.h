@@ -30,6 +30,7 @@ enum {
         TOK_CONNECTION,
         TOK_CONTENT_ENCODING,
         TOK_CONTENT_LANGUAGE,
+        TOK_CONTENT_MD5,
         TOK_COUNT,
 };
 

@@ -11,6 +11,7 @@ static std::unordered_map<std::string,int> reqmap {
         {"Connection", TOK_CONNECTION},
         {"Content-Encoding", TOK_CONTENT_ENCODING},
         {"Content-Language", TOK_CONTENT_LANGUAGE},
+        {"Content-MD5", TOK_CONTENT_MD5},
 };
 
 lexer::lexer(FILE *fp)
@@ -70,7 +71,7 @@ const token& lexer::next(void)
 
                 if (_inhdr && (isalpha(c) || c == '-')) {
                         std::string s {};
-                        while (isalpha(c) || c == '-') {
+                        while (isalpha(c) || c == '-' || isdigit(c)) {
                                 s += c;
                                 c = fgetc(_fp);
                         }
